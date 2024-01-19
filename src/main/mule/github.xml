@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="e502c563-9bd3-408c-83b6-8712dedc0193" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="461ae11d-bc77-4208-a320-68be7235d51c" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="Viratian@1234" database="gopi" />
+	</db:config>
+	<flow name="githubFlow" doc:id="915fadb4-d381-47b5-8d8d-fda12e8382fe" >
+		<http:listener doc:name="Listener" doc:id="98d045eb-7984-42ab-8b01-d70ba4bdffcf" config-ref="HTTP_Listener_config" path="/git"/>
+		<logger level="INFO" doc:name="Logger" doc:id="3c119069-3355-498e-abb0-69081e300ffa" message="#[payload]"/>
+		<db:select doc:name="Select" doc:id="3fe6bc6e-3c6c-4380-9486-bd5da4ebd14a" config-ref="Database_Config">
+			<db:sql ><![CDATA[select * from student2;]]></db:sql>
+		</db:select>
+		<logger level="INFO" doc:name="Logger" doc:id="f956c27c-22e0-441b-92f8-7a2a7c938ab3" message="#[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="068a79b7-1575-4432-b079-028d1bd767d5" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
